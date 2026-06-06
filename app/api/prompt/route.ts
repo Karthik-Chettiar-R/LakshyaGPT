@@ -1,164 +1,178 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { generateText, generateObject } from 'ai';
+import { generateObject } from 'ai';
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Initialize the Google Generative AI provider with support for both environment variable names
+// Initialize the Google Generative AI provider
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || '',
 });
 
-// Define the dashboard schema using Zod
-const dashboardSchema = z.object({
-  brandName: z.string(),
-  tagline: z.string(),
-  executiveSummary: z.string(),
-  targetAudience: z.array(z.object({
-    segment: z.string(),
-    description: z.string(),
-    interest: z.string(),
-  })),
-  financialModel: z.object({
-    unitCost: z.number(),
-    recommendedPrice: z.number(),
-    estimatedSalesPerMonth: z.number(),
-    explanation: z.string(),
-  }),
-  marketingStrategy: z.array(z.object({
-    channel: z.string(),
-    campaignIdea: z.string(),
-    estimatedCost: z.string(),
-  })),
-  brandIdentity: z.object({
-    colors: z.array(z.object({
-      name: z.string(),
-      hex: z.string(),
+// Zod schema for validation and generation output
+const responseSchema = z.object({
+  isValid: z.boolean(),
+  score: z.number(),
+  missingFields: z.array(z.string()),
+  coachTips: z.array(z.string()),
+  fallbackText: z.string(),
+  dashboard: z.object({
+    brandName: z.string(),
+    tagline: z.string(),
+    executiveSummary: z.string(),
+    report: z.object({
+      executiveSummary: z.string(),
+      problemStatement: z.string(),
+      businessOverview: z.string(),
+      targetAudienceAnalysis: z.string(),
+      improvedAiEnhancedSolution: z.string(),
+      aiImplementationStrategy: z.string(),
+      revenueModel: z.string(),
+      socialImpact: z.string(),
+      marketingStrategy: z.string(),
+      futureGrowthOpportunities: z.string(),
+      recommendations: z.string(),
+      conclusion: z.string(),
+    }),
+    targetAudience: z.array(z.object({
+      segment: z.string(),
+      description: z.string(),
+      interest: z.string(),
     })),
-    logoConcept: z.string(),
-    toneOfVoice: z.string(),
-  }),
-  checklist: z.array(z.object({
-    id: z.string(),
-    task: z.string(),
-    category: z.enum(['Sourcing', 'Marketing', 'Operations', 'Finance']),
-  })),
+    financialModel: z.object({
+      unitCost: z.number(),
+      recommendedPrice: z.number(),
+      estimatedSalesPerMonth: z.number(),
+      explanation: z.string(),
+    }),
+    marketingStrategy: z.array(z.object({
+      channel: z.string(),
+      campaignIdea: z.string(),
+      estimatedCost: z.string(),
+    })),
+    brandIdentity: z.object({
+      colors: z.array(z.object({
+        name: z.string(),
+        hex: z.string(),
+      })),
+      logoConcept: z.string(),
+      toneOfVoice: z.string(),
+    }),
+    checklist: z.array(z.object({
+      id: z.string(),
+      task: z.string(),
+      category: z.enum(['Sourcing', 'Marketing', 'Operations', 'Finance']),
+    })),
+  }).optional(),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { prompt, missionId, score } = body;
+    const { prompt, missionId } = body;
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json({ error: 'Invalid prompt provided.' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey || apiKey === 'your_gemini_api_key_here') {
       return NextResponse.json({
         error: 'Gemini API Key is missing or invalid. Please set your GEMINI_API_KEY in your .env.local file to unlock true AI generation!'
       }, { status: 400 });
     }
 
-    const isGoodPrompt = score >= 70;
+    const systemInstruction = `You are an elite, energetic, and highly professional startup incubator coach and entrepreneurial business advisor.
+You are evaluating a student's business proposal for the predefined problem statement: "${missionId}".
 
-    if (isGoodPrompt) {
-      // 1. Excellent Prompt: Generate rich, structured JSON dashboard data
-      const systemInstruction = `You are an elite, energetic, and highly professional startup incubator coach and entrepreneurial business advisor.
-The kid has written an excellent, highly detailed prompt: "${prompt}" for their business mission: "${missionId}".
-They have specified their role, format, and details!
-You must generate a comprehensive, highly creative, and fully customized business roadmap and launch deck in a structured format.
-Make the ideas exciting, kid-friendly, practical, and highly tailored to the specific details in their prompt (e.g. brand name, colors, budget, audience, product features if specified).
+The student has submitted the following prompt describing their proposed business:
+"${prompt}"
 
-Generate a JSON object containing:
-1. brandName: The brand name they specified, or a highly creative one if they didn't specify.
-2. tagline: A catchy, energetic slogan.
-3. executiveSummary: A glowing, professional 2-3 sentence overview of their startup launch.
-4. targetAudience: An array of 3 customer segments (e.g. parents, school students, sports coaches). For each segment, provide:
-   - segment: Segment name.
-   - description: Why they will buy the product.
-   - interest: What grabs their attention.
-5. financialModel:
-   - unitCost: A reasonable estimated unit cost in dollars (e.g., 0.25 to 1.50 for lemonade, 15.00 to 45.00 for sneakers, etc.).
-   - recommendedPrice: A optimized retail price in dollars.
-   - estimatedSalesPerMonth: A realistic target sales quantity for the first month (e.g. 50 to 500).
-   - explanation: A short, simple 1-2 sentence explanation of why this pricing works and how they can maximize their margins.
-6. marketingStrategy: An array of 3 high-impact marketing campaigns, specifying:
-   - channel: e.g. "Social Media Hack", "School Flyers", "Local Event Partnership".
-   - campaignIdea: A detailed, creative, fun launch campaign.
-   - estimatedCost: A budget estimate (e.g. "$5", "Free", "$20").
-7. brandIdentity:
-   - colors: An array of 3 hex colors with names that represent their brand aesthetic (e.g., if they asked for cyberpunk neon green and dark violet, include exact matches).
-   - logoConcept: A visual description of what their logo should look like.
-   - toneOfVoice: 2-3 adjectives describing their brand voice (e.g., "Exciting, Trendy, Playful").
-8. checklist: An array of 6 concrete, actionable tasks across categories: Sourcing, Marketing, Operations, Finance (at least one in each). Provide:
-   - id: a unique string ID (e.g. "task-1", "task-2", etc.).
-   - task: e.g. "Buy lemons and cups", "Design flyers on Canva".
-   - category: Must be one of 'Sourcing', 'Marketing', 'Operations', 'Finance'.`;
+Your tasks:
 
-      const result = await generateObject({
-        model: google('gemini-2.5-flash'),
-        schema: dashboardSchema,
-        prompt: `Create a startup launch report for prompt: "${prompt}" and mission: "${missionId}"`,
-        system: systemInstruction,
-      });
+1. VALIDATION OF PROMPT FIELDS:
+Analyze the student's prompt and check if they have provided information representing these 5 required fields and 1 optional field:
+* Business Name (synonyms: startup name, company name, project name, brand name, name, etc.)
+* Target Audience (synonyms: customers, users, beneficiaries, who is it for, targeting, etc.)
+* AI Role / Persona (synonyms: act as, assume role, AI persona, expert type, perspective, role, etc.)
+* Rough Solution (synonyms: idea, plan, concept, proposed solution, approach, method, business idea, etc.)
+* Tagline (synonyms: tagline, slogan, motto, catchphrase, brand line, etc.) [OPTIONAL]
+* How AI Will Be Used (synonyms: AI usage, how AI is used, AI features, AI integration, AI functionality, etc.)
 
+Validation Rules:
+- Be generous when validating.
+- Accept minor wording variations.
+- Accept natural language responses.
+- Ignore field order.
+- Ignore extra text.
+- Do not require exact keywords.
+- Consider fuzzy matching and synonym matching.
+
+Set 'isValid' to true if and only if all 5 required fields (Business Name, Target Audience, AI Role, Rough Solution, How AI Will Be Used) are semantically present in the prompt. (Tagline is optional, so its absence does NOT make the prompt invalid).
+Compute 'score' as the percentage of required fields present (20% for each present field, up to 100%).
+
+If 'isValid' is false:
+- Set 'missingFields' to the list of missing required fields (use labels: "Business Name", "Target Audience", "AI Role / Persona", "Rough Solution", "How AI Will Be Used").
+- Write 2-3 friendly, constructive coaching tips in 'coachTips' on how they can improve their prompt to supply these missing details.
+- Provide a bored, lazy, sarcastic, single-paragraph response under 80 words in 'fallbackText' (e.g. for traffic: "Here is a report. Carpool more. Charge money. Good luck."). Do not use bullet points or lists in 'fallbackText'.
+- Do not include the 'dashboard' property in the JSON output (leave it undefined/omitted).
+
+If 'isValid' is true:
+- Set 'missingFields' to an empty array.
+- Set 'coachTips' to a list of positive feedback (e.g. 2 tips praising their prompt).
+- Set 'fallbackText' to an empty string.
+- Generate a comprehensive Professional Business Report in the 'dashboard.report' field containing the following 12 sections. Each section must be a professional 1-2 paragraph description, written in a clear, startup-ready tone:
+  1. executiveSummary: Executive Summary
+  2. problemStatement: Problem Statement
+  3. businessOverview: Business Overview
+  4. targetAudienceAnalysis: Target Audience Analysis
+  5. improvedAiEnhancedSolution: Improved AI-Enhanced Solution
+  6. aiImplementationStrategy: AI Implementation Strategy
+  7. revenueModel: Revenue Model
+  8. socialImpact: Social Impact
+  9. marketingStrategy: Marketing Strategy
+  10. futureGrowthOpportunities: Future Growth Opportunities
+  11. recommendations: Recommendations
+  12. conclusion: Conclusion
+- Generate structured 'dashboard' details for the premium widgets:
+  - brandName: The business name they specified, or a creative brand name matching their idea.
+  - tagline: The tagline they specified, or a catchy one you generate for them.
+  - executiveSummary: A glowing 2-sentence summary of the business.
+  - targetAudience: 3 specific customer segments with 'segment', 'description' (why they buy), and 'interest' (what grabs them).
+  - financialModel:
+    - unitCost: Reasonable cost in dollars (e.g. 0.50 to 5.00 for services, 10.00 to 50.00 for products).
+    - recommendedPrice: Retail price in dollars.
+    - estimatedSalesPerMonth: Realistic estimate (e.g. 20 to 1000).
+    - explanation: A 1-2 sentence explanation of why this pricing model is recommended.
+  - marketingStrategy: 3 creative campaign channels (channel name, campaign idea, estimated cost in dollars or 'Free').
+  - brandIdentity:
+    - colors: Array of 3 hex colors with names that represent the brand (e.g., matching neon colors if specified, or standard premium startup colors).
+    - logoConcept: Visual description of a logo design.
+    - toneOfVoice: 2-3 adjectives (e.g., 'Energetic, Friendly, Sincere').
+  - checklist: Array of 6 concrete, actionable tasks across Sourcing, Marketing, Operations, and Finance (at least one in each category), with unique string IDs like 'task-1', 'task-2', etc.`;
+
+    const result = await generateObject({
+      model: google('gemini-2.5-flash'),
+      schema: responseSchema,
+      prompt: `Analyze the startup prompt for mission: "${missionId}". Prompt: "${prompt}"`,
+      system: systemInstruction,
+    });
+
+    const parsedData = result.object;
+
+    if (parsedData.isValid && parsedData.dashboard) {
       return NextResponse.json({
-        score,
+        score: parsedData.score,
         grade: 'Excellent',
-        rawText: `Successfully generated comprehensive startup report for ${result.object.brandName}.`,
-        dashboard: result.object,
-        coachTips: [
-          'Brilliant work! You included a clear role, defined your topic, added specific formats, and gave solid constraints.',
-          'Your prompt allowed the AI to execute the boring layout tasks while you did the creative brainstorming!',
-        ],
+        rawText: `Successfully generated comprehensive startup report for ${parsedData.dashboard.brandName}.`,
+        dashboard: parsedData.dashboard,
+        coachTips: parsedData.coachTips,
       });
     } else {
-      // 2. Bad Prompt: Generate a lazy, unstructured plain text response
-      const systemInstruction = `You are a bored, lazy, and completely unhelpful AI assistant. 
-The user has asked you to help them with a business plan for their mission: "${missionId}", but they wrote a very bad, short, and unstructured prompt: "${prompt}".
-Because their prompt lacks details, roles, formatting, and constraints, you must write a very short, flat, unstructured, bulletless, and completely unhelpful paragraph. 
-Make it feel intentionally lazy and slightly sarcastic, like a bored worker who does the absolute bare minimum.
-Do not include tables, headers, lists, or details. Just a single block of plain, uninspiring text.
-For example, if it's a lemonade stand: "Here is a report. Sell lemons in a cup. Charge money. Good luck."
-Keep your response under 80 words.`;
-
-      const result = await generateText({
-        model: google('gemini-2.5-flash'),
-        prompt: `Help me with my business plan. Here is my prompt: "${prompt}"`,
-        system: systemInstruction,
-      });
-
-      // Provide coaching tips to help them improve
-      const coachTips = [];
-      const lower = prompt.toLowerCase();
-      
-      const hasRole = /act as|role|expert|consultant|analyst|planner|coach|specialist/i.test(lower);
-      const hasFormat = /table|bullet|list|checklist|heading|structure/i.test(lower);
-      const hasConstraints = /\b\d+\b|\$|budget|price|cost|target/i.test(lower);
-
-      if (!hasRole) {
-        coachTips.push('💡 Tip: Try assigning the AI a Role! E.g. "Act as a professional streetwear brand director."');
-      }
-      if (!hasFormat) {
-        coachTips.push('📊 Tip: Demand a structure! Tell the AI to "Organize the pricing details in a structured table."');
-      }
-      if (!hasConstraints) {
-        coachTips.push('🎯 Tip: Set constraints! Give the AI exact budgets, numbers, target audiences, or color palettes.');
-      }
-      if (prompt.split(/\s+/).length < 8) {
-        coachTips.push('✍️ Tip: Write a longer prompt! A good prompt explains the context and does the thinking for the AI.');
-      }
-
-      if (coachTips.length === 0) {
-        coachTips.push('💡 Tip: Add more detailed specifics like brand colors, budget limits, or target audiences to cross the 70% mark!');
-      }
-
       return NextResponse.json({
-        score,
+        score: parsedData.score,
         grade: 'Needs Improvement',
-        rawText: result.text,
-        coachTips,
+        rawText: parsedData.fallbackText || 'Validation failed. Please supply all required fields.',
+        coachTips: parsedData.coachTips,
       });
     }
   } catch (error: any) {

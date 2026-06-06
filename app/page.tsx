@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Citrus,
-  Footprints,
-  Cake,
   Smartphone,
   Sparkles,
   TrendingUp,
@@ -29,7 +26,14 @@ import {
   ArrowLeft,
   X,
   Target,
-  DollarSign
+  DollarSign,
+  Car,
+  ShieldAlert,
+  UserX,
+  HeartPulse,
+  Trash2,
+  Sprout,
+  Trophy
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { MISSIONS } from "./missions";
@@ -38,12 +42,20 @@ import { BusinessMission, PromptScore, PromptResult, DashboardData } from "./typ
 // Helper component to render icons dynamically
 const MissionIcon = ({ name, className }: { name: string; className?: string }) => {
   switch (name) {
-    case "Citrus":
-      return <Citrus className={className} />;
-    case "Footprints":
-      return <Footprints className={className} />;
-    case "Cake":
-      return <Cake className={className} />;
+    case "Car":
+      return <Car className={className} />;
+    case "ShieldAlert":
+      return <ShieldAlert className={className} />;
+    case "UserX":
+      return <UserX className={className} />;
+    case "HeartPulse":
+      return <HeartPulse className={className} />;
+    case "Trash2":
+      return <Trash2 className={className} />;
+    case "Sprout":
+      return <Sprout className={className} />;
+    case "Trophy":
+      return <Trophy className={className} />;
     case "Smartphone":
       return <Smartphone className={className} />;
     default:
@@ -57,22 +69,24 @@ export default function Home() {
   const [promptInput, setPromptInput] = useState<string>("");
   const [liveScore, setLiveScore] = useState<PromptScore>({
     total: 0,
-    hasRole: false,
-    hasTopic: false,
-    hasFormat: false,
-    hasConstraints: false,
+    hasBusinessName: false,
+    hasTargetAudience: false,
+    hasAiRole: false,
+    hasSolution: false,
+    hasAiUsage: false,
+    hasTagline: false,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [result, setResult] = useState<PromptResult | null>(null);
   const [showPromptCoach, setShowPromptCoach] = useState<boolean>(false);
-  const [activeDashboardTab, setActiveDashboardTab] = useState<string>("overview");
-  
+  const [activeDashboardTab, setActiveDashboardTab] = useState<string>("report");
+
   // Calculator Interactive State
   const [calcUnitCost, setCalcUnitCost] = useState<number>(0);
   const [calcRetailPrice, setCalcRetailPrice] = useState<number>(0);
   const [calcSalesVolume, setCalcSalesVolume] = useState<number>(0);
-  
+
   // Interactive Brand Checklist State
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
   const [copySuccess, setCopySuccess] = useState<Record<string, boolean>>({});
@@ -97,11 +111,11 @@ export default function Home() {
     const newExp = exp + amount;
     const newAttempts = attempts + 1;
     const newSuccess = successfulAttempts + (isSuccess ? 1 : 0);
-    
+
     setExp(newExp);
     setAttempts(newAttempts);
     setSuccessfulAttempts(newSuccess);
-    
+
     localStorage.setItem("lakshya_exp", newExp.toString());
     localStorage.setItem("lakshya_attempts", newAttempts.toString());
     localStorage.setItem("lakshya_success", newSuccess.toString());
@@ -110,37 +124,32 @@ export default function Home() {
   // Evaluate the prompt locally in real-time as the user types
   useEffect(() => {
     if (!selectedMission) return;
-    
+
     const text = promptInput;
     const lower = text.toLowerCase();
-    const keywords = selectedMission.evalKeywords;
-    
-    const hasRole = keywords.role.some(kw => lower.includes(kw));
-    const hasTopic = keywords.topic.some(kw => lower.includes(kw));
-    const hasFormat = keywords.format.some(kw => lower.includes(kw));
-    const hasConstraints = keywords.constraints.some(kw => lower.includes(kw));
-    
+
+    const hasBusinessName = /(name|brand|company|startup|venture|project|business|called|titled|named|firm|agency)/i.test(lower);
+    const hasTargetAudience = /(audience|audidence|customer|user|beneficiar|who is it for|who will use|target|aimed at|focus on|kids|student|commuter|farmer|citizen|people|patient|resident|athlete|scout|parent|counselor|government|department)/i.test(lower);
+    const hasAiRole = /(role|act as|act like|assume|persona|expert|consultant|advisor|perspective|mentor|analyst|strategist|coach|specialist|assistant|agent|advocate|counselor)/i.test(lower);
+    const hasSolution = /(solution|idea|plan|concept|approach|method|solve|service|product|app|platform|system|offer|proposal|pitch|business model|technology|tool|hardware|software|lock|kiosk|van|shuttle|bin|chatbot)/i.test(lower);
+    const hasAiUsage = /(ai (will|is|can|to|could|should|usage|use|feature|integration|function|component|helper|buddy|chat|model|system|tool|implement)|use ai|using ai|artificial intelligence|machine learning|computer vision|skeletal vision|sentiment analysis|algorithms)/i.test(lower);
+    const hasTagline = /(tagline|slogan|motto|catchphrase|phrase|brand line|brandline|saying|quote)/i.test(lower);
+
     let score = 0;
-    if (hasRole) score += 20;
-    if (hasTopic) score += 20;
-    if (hasFormat) score += 20;
-    if (hasConstraints) score += 20;
-    
-    const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
-    if (wordCount >= 30) {
-      score += 20;
-    } else if (wordCount >= 15) {
-      score += 10;
-    } else if (wordCount >= 5) {
-      score += 5;
-    }
-    
+    if (hasBusinessName) score += 20;
+    if (hasTargetAudience) score += 20;
+    if (hasAiRole) score += 20;
+    if (hasSolution) score += 20;
+    if (hasAiUsage) score += 20;
+
     setLiveScore({
-      total: Math.min(100, score),
-      hasRole,
-      hasTopic,
-      hasFormat,
-      hasConstraints,
+      total: score,
+      hasBusinessName,
+      hasTargetAudience,
+      hasAiRole,
+      hasSolution,
+      hasAiUsage,
+      hasTagline,
     });
   }, [promptInput, selectedMission]);
 
@@ -151,7 +160,7 @@ export default function Home() {
       setCalcUnitCost(model.unitCost);
       setCalcRetailPrice(model.recommendedPrice);
       setCalcSalesVolume(model.estimatedSalesPerMonth);
-      
+
       // Initialize interactive checklist state
       const taskStates: Record<string, boolean> = {};
       result.dashboard.checklist.forEach(item => {
@@ -212,7 +221,7 @@ export default function Home() {
           colors: ["#8b5cf6", "#06b6d4", "#f43f5e", "#10b981"]
         });
         addExp(120, true);
-        setActiveDashboardTab("overview");
+        setActiveDashboardTab("report");
       } else {
         addExp(30, false);
         setShowPromptCoach(true);
@@ -250,7 +259,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
-      
+
       {/* Dynamic Background Glowing Blobs */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-[120px] pointer-events-none -z-10" />
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none -z-10" />
@@ -288,7 +297,7 @@ export default function Home() {
               <span>{expProgress}/100</span>
             </div>
             <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-violet-500 to-cyan-400 transition-all duration-500"
                 style={{ width: `${expProgress}%` }}
               />
@@ -308,7 +317,7 @@ export default function Home() {
 
       {/* Main Sandbox Frame */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
-        
+
         {/* State 1: Mission Selection Screen */}
         {!selectedMission ? (
           <div className="py-8 md:py-12">
@@ -333,11 +342,11 @@ export default function Home() {
                 >
                   {/* Glowing card ring */}
                   <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
+
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center group-hover:border-violet-500/40 transition-colors">
                     <MissionIcon name={mission.icon} className="w-6 h-6 text-cyan-400 group-hover:text-violet-400 transition-colors" />
                   </div>
-                  
+
                   <div className="flex-1 flex flex-col justify-between">
                     <div>
                       <h3 className="text-lg font-bold text-white group-hover:text-violet-300 transition-colors flex items-center gap-2">
@@ -353,10 +362,10 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          
+
           /* State 2: Active Chat & Sandbox Screen */
           <div className="flex flex-col gap-6">
-            
+
             {/* Top Navigation & Mission Summary Panel */}
             <div className="glass-panel p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -386,24 +395,24 @@ export default function Home() {
               <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-lg border border-white/5 text-[11px] max-w-md">
                 <Target className="w-4 h-4 text-rose-400 flex-shrink-0" />
                 <span className="text-slate-300">
-                  <strong className="text-white">Goal:</strong> Target a Prompt Score of <strong className="text-emerald-400">70% or more</strong> by specifying the Role, Topic, Format, and Constraints.
+                  <strong className="text-white">Goal:</strong> Target a Prompt Score of <strong className="text-emerald-400">100%</strong> by specifying the Business Name, Target Audience, AI Role, Solution, and AI Usage.
                 </span>
               </div>
             </div>
 
             {/* Split Screen Panel */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              
+
               {/* LEFT COLUMN: THE PROMPT COCH CONSOLE (5 COLS) */}
               <div className="lg:col-span-5 flex flex-col gap-6">
-                
+
                 {/* 1. Prompting Coach Instructions Card */}
                 <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
                   <h4 className="text-sm font-bold text-slate-200 flex items-center gap-2 uppercase tracking-wider">
                     <BookOpen className="w-4 h-4 text-violet-400" />
                     How to construct a great prompt
                   </h4>
-                  
+
                   <div className="grid grid-cols-1 gap-2.5">
                     {selectedMission.tips.map((tip, idx) => {
                       const label = tip.split(":")[0];
@@ -445,52 +454,56 @@ export default function Home() {
                   <div className="p-4 bg-slate-950/80 rounded-xl border border-white/5 flex flex-col gap-3">
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-semibold text-slate-400">PROMPT STRENGTH</span>
-                      <span className={`font-black ${
-                        liveScore.total >= 70 ? "text-emerald-400" : liveScore.total >= 40 ? "text-yellow-400" : "text-rose-500"
-                      }`}>
-                        {liveScore.total}% {liveScore.total >= 70 ? "(EXCELLENT)" : liveScore.total >= 40 ? "(OKAY)" : "(WEAK)"}
+                      <span className={`font-black ${liveScore.total === 100 ? "text-emerald-400" : liveScore.total >= 60 ? "text-yellow-400" : "text-rose-500"
+                        }`}>
+                        {liveScore.total}% {liveScore.total === 100 ? "(EXCELLENT)" : liveScore.total >= 60 ? "(OKAY)" : "(WEAK)"}
                       </span>
                     </div>
 
                     {/* Progress Slider bar */}
                     <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden flex">
                       <div
-                        className={`h-full transition-all duration-300 bg-gradient-to-r ${
-                          liveScore.total >= 70 
-                            ? "from-violet-500 to-emerald-400" 
-                            : liveScore.total >= 40 
-                              ? "from-violet-500 to-yellow-400" 
+                        className={`h-full transition-all duration-300 bg-gradient-to-r ${liveScore.total === 100
+                            ? "from-violet-500 to-emerald-400"
+                            : liveScore.total >= 60
+                              ? "from-violet-500 to-yellow-400"
                               : "from-rose-600 to-rose-400"
-                        }`}
+                          }`}
                         style={{ width: `${liveScore.total}%` }}
                       />
                     </div>
 
                     {/* Live Blueprint Checklist Badges */}
                     <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/5">
-                      <div className={`flex items-center gap-2 text-xs transition-colors duration-300 ${
-                        liveScore.hasRole ? "text-emerald-400" : "text-slate-500"
-                      }`}>
-                        <div className={`w-2 h-2 rounded-full ${liveScore.hasRole ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
-                        <span>1. AI Persona/Role</span>
+                      <div className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${liveScore.hasAiRole ? "text-emerald-400" : "text-slate-500"
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full ${liveScore.hasAiRole ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
+                        <span>1. AI Role / Persona</span>
                       </div>
-                      <div className={`flex items-center gap-2 text-xs transition-colors duration-300 ${
-                        liveScore.hasTopic ? "text-emerald-400" : "text-slate-500"
-                      }`}>
-                        <div className={`w-2 h-2 rounded-full ${liveScore.hasTopic ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
-                        <span>2. Topic Context</span>
+                      <div className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${liveScore.hasBusinessName ? "text-emerald-400" : "text-slate-500"
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full ${liveScore.hasBusinessName ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
+                        <span>2. Business Name</span>
                       </div>
-                      <div className={`flex items-center gap-2 text-xs transition-colors duration-300 ${
-                        liveScore.hasFormat ? "text-emerald-400" : "text-slate-500"
-                      }`}>
-                        <div className={`w-2 h-2 rounded-full ${liveScore.hasFormat ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
-                        <span>3. Target Format</span>
+                      <div className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${liveScore.hasSolution ? "text-emerald-400" : "text-slate-500"
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full ${liveScore.hasSolution ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
+                        <span>3. Rough Solution</span>
                       </div>
-                      <div className={`flex items-center gap-2 text-xs transition-colors duration-300 ${
-                        liveScore.hasConstraints ? "text-emerald-400" : "text-slate-500"
-                      }`}>
-                        <div className={`w-2 h-2 rounded-full ${liveScore.hasConstraints ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
-                        <span>4. Constraints/Rules</span>
+                      <div className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${liveScore.hasTargetAudience ? "text-emerald-400" : "text-slate-500"
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full ${liveScore.hasTargetAudience ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
+                        <span>4. Target Audience</span>
+                      </div>
+                      <div className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${liveScore.hasAiUsage ? "text-emerald-400" : "text-slate-500"
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full ${liveScore.hasAiUsage ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
+                        <span>5. AI Usage</span>
+                      </div>
+                      <div className={`flex items-center gap-2 text-[10px] transition-colors duration-300 ${liveScore.hasTagline ? "text-emerald-400/80" : "text-slate-500"
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full ${liveScore.hasTagline ? "bg-emerald-400/80" : "bg-slate-600"}`} />
+                        <span>6. Tagline (Optional)</span>
                       </div>
                     </div>
                   </div>
@@ -504,7 +517,7 @@ export default function Home() {
                         placeholder={`Explain how you want the report... E.g. ${selectedMission.placeholder}`}
                         className="w-full min-h-[140px] max-h-[300px] p-4 bg-slate-900 border border-white/10 rounded-xl focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 text-xs font-mono leading-relaxed resize-y placeholder:text-slate-600 text-slate-100 outline-none transition-all"
                       />
-                      
+
                       <div className="absolute bottom-3 right-3 flex items-center gap-1.5 text-[10px] text-slate-500 font-semibold bg-slate-950/80 px-2 py-1 rounded border border-white/5">
                         <Lock className="w-3.5 h-3.5 text-rose-400" />
                         <span>Secure API Mode</span>
@@ -514,11 +527,10 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={isLoading || promptInput.trim() === ""}
-                      className={`w-full py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg ${
-                        promptInput.trim() === ""
+                      className={`w-full py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg ${promptInput.trim() === ""
                           ? "bg-slate-800 text-slate-500 cursor-not-allowed border border-white/5"
                           : "bg-gradient-to-r from-violet-600 to-cyan-500 text-white hover:brightness-110 shadow-violet-500/10 cursor-pointer active:scale-[0.98]"
-                      }`}
+                        }`}
                     >
                       {isLoading ? (
                         <>
@@ -538,12 +550,12 @@ export default function Home() {
 
               {/* RIGHT COLUMN: THE AI MATRIX OUTPUT (7 COLS) */}
               <div className="lg:col-span-7">
-                
+
                 {/* Visual State A: Loading Grid Scan */}
                 {isLoading && (
                   <div className="glass-panel p-12 rounded-2xl border border-white/5 min-h-[480px] flex flex-col items-center justify-center text-center relative overflow-hidden">
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.01)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
-                    
+
                     {/* Scanning Laser line */}
                     <div className="absolute left-0 right-0 h-0.5 bg-cyan-400/40 shadow-[0_0_15px_rgba(34,211,238,0.8)] animate-pulse" style={{
                       animation: 'scan 2s linear infinite',
@@ -556,21 +568,21 @@ export default function Home() {
                         100% { top: 0%; }
                       }
                     `}</style>
-                    
+
                     <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center mb-6 animate-pulse">
                       <Brain className="w-8 h-8 text-cyan-400" />
                     </div>
-                    
+
                     <h3 className="text-lg font-bold text-white mb-2 animate-bounce">Consulting the AI Brain</h3>
                     <p className="text-xs text-slate-400 max-w-sm mb-6 leading-relaxed">
                       Analyzing prompt parameters against {selectedMission.title} guidelines. Fetching model data...
                     </p>
-                    
+
                     {/* Retro console mock logs */}
                     <div className="w-full max-w-md bg-slate-950 p-4 rounded-lg border border-white/5 font-mono text-[10px] text-left text-slate-500 space-y-1">
                       <p className="text-cyan-400">&gt; INITIALIZING SECURE NEXTJS SERVER ROUTE...</p>
                       <p>&gt; DETECTED PROMPT SCORE: {liveScore.total}%</p>
-                      <p>&gt; MATCHED KEYWORDS: R={liveScore.hasRole ? "1" : "0"} T={liveScore.hasTopic ? "1" : "0"} F={liveScore.hasFormat ? "1" : "0"} C={liveScore.hasConstraints ? "1" : "0"}</p>
+                      <p>&gt; DETECTED FIELDS: N={liveScore.hasBusinessName ? "1" : "0"} A={liveScore.hasTargetAudience ? "1" : "0"} R={liveScore.hasAiRole ? "1" : "0"} S={liveScore.hasSolution ? "1" : "0"} U={liveScore.hasAiUsage ? "1" : "0"}</p>
                       <p className="text-violet-400">&gt; TRANSMITTING STRUCTURAL INSTRUCTIONS TO GEMINI-2.5-FLASH...</p>
                       <p className="animate-pulse text-yellow-500">&gt; WAITING FOR RESPONSES FROM ORBITAL SERVERS...</p>
                     </div>
@@ -589,7 +601,7 @@ export default function Home() {
                     </p>
                     <div className="px-4 py-2.5 bg-slate-900 rounded-lg border border-white/5 inline-flex items-center gap-2 text-xs">
                       <Lock className="w-3.5 h-3.5 text-rose-400" />
-                      <span className="text-slate-400">Write a detailed prompt (score &ge; 70%) to unlock the premium dashboard!</span>
+                      <span className="text-slate-400">Write a detailed prompt containing all required fields to unlock the dashboard!</span>
                     </div>
                   </div>
                 )}
@@ -604,7 +616,7 @@ export default function Home() {
                     <p className="text-xs text-rose-300 max-w-md leading-relaxed mb-6">
                       {apiError}
                     </p>
-                    
+
                     <div className="w-full max-w-md bg-slate-950 p-4 rounded-xl border border-white/5 text-left text-xs text-slate-400 leading-relaxed space-y-2">
                       <p className="font-bold text-white flex items-center gap-1.5">
                         <Settings className="w-4 h-4 text-violet-400" />
@@ -623,11 +635,11 @@ export default function Home() {
                 {/* Visual State D: Response loaded */}
                 {!isLoading && result && (
                   <div className="flex flex-col gap-6">
-                    
+
                     {/* CASE D1: EXCELLENT PROMPT -> HIGH-FIDELITY BUSINESS DASHBOARD */}
                     {result.grade === "Excellent" && result.dashboard && (
                       <div className="glass-panel rounded-2xl border border-white/5 overflow-hidden flex flex-col min-h-[520px]">
-                        
+
                         {/* Premium Dashboard Header swatch */}
                         <div className="bg-gradient-to-r from-violet-900/40 via-cyan-900/40 to-slate-900 px-6 py-5 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div>
@@ -661,6 +673,7 @@ export default function Home() {
                         {/* Navigation Tabs bar */}
                         <div className="flex overflow-x-auto border-b border-white/5 bg-slate-950/60 scrollbar-none px-4">
                           {[
+                            { id: "report", label: "Business Report", icon: BookOpen },
                             { id: "overview", label: "Launch Strategy", icon: Rocket },
                             { id: "financials", label: "Profit Calculator", icon: Coins },
                             { id: "marketing", label: "Marketing Campaigns", icon: MessageSquare },
@@ -673,11 +686,10 @@ export default function Home() {
                               <button
                                 key={tab.id}
                                 onClick={() => setActiveDashboardTab(tab.id)}
-                                className={`flex items-center gap-2 py-3.5 px-4 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${
-                                  isActive
+                                className={`flex items-center gap-2 py-3.5 px-4 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${isActive
                                     ? "border-cyan-400 text-cyan-300 bg-cyan-400/5"
                                     : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/2"
-                                }`}
+                                  }`}
                               >
                                 <IconComp className="w-4 h-4" />
                                 {tab.label}
@@ -688,7 +700,48 @@ export default function Home() {
 
                         {/* Dashboard Body Contents */}
                         <div className="p-6 flex-1 flex flex-col bg-slate-900/30">
-                          
+
+                          {/* TAB: BUSINESS REPORT */}
+                          {activeDashboardTab === "report" && result.dashboard?.report && (
+                            <div className="space-y-6">
+                              <div className="p-4 bg-gradient-to-r from-violet-600/10 to-cyan-500/10 rounded-xl border border-violet-500/20">
+                                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                                  <BookOpen className="w-5 h-5 text-violet-400" />
+                                  Professional Business Report
+                                </h3>
+                                <p className="text-xs text-slate-400 mt-1">
+                                  This complete professional feasibility and startup deck is dynamically generated by LakshyaGPT AI.
+                                </p>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {[
+                                  { title: "1. Executive Summary", text: result.dashboard.report.executiveSummary, color: "text-violet-400" },
+                                  { title: "2. Problem Statement", text: result.dashboard.report.problemStatement, color: "text-rose-400" },
+                                  { title: "3. Business Overview", text: result.dashboard.report.businessOverview, color: "text-cyan-400" },
+                                  { title: "4. Target Audience Analysis", text: result.dashboard.report.targetAudienceAnalysis, color: "text-amber-400" },
+                                  { title: "5. Improved AI-Enhanced Solution", text: result.dashboard.report.improvedAiEnhancedSolution, color: "text-emerald-400" },
+                                  { title: "6. AI Implementation Strategy", text: result.dashboard.report.aiImplementationStrategy, color: "text-sky-400" },
+                                  { title: "7. Revenue Model", text: result.dashboard.report.revenueModel, color: "text-indigo-400" },
+                                  { title: "8. Social Impact", text: result.dashboard.report.socialImpact, color: "text-teal-400" },
+                                  { title: "9. Marketing Strategy", text: result.dashboard.report.marketingStrategy, color: "text-pink-400" },
+                                  { title: "10. Future Growth Opportunities", text: result.dashboard.report.futureGrowthOpportunities, color: "text-orange-400" },
+                                  { title: "11. Recommendations", text: result.dashboard.report.recommendations, color: "text-yellow-400" },
+                                  { title: "12. Conclusion", text: result.dashboard.report.conclusion, color: "text-emerald-300" }
+                                ].map((sec, idx) => (
+                                  <div key={idx} className="p-5 bg-slate-950/60 rounded-xl border border-white/5 hover:border-white/10 transition-colors space-y-2">
+                                    <h4 className={`text-xs font-bold ${sec.color} uppercase tracking-wider`}>
+                                      {sec.title}
+                                    </h4>
+                                    <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                                      {sec.text}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
                           {/* TAB 1: OVERVIEW */}
                           {activeDashboardTab === "overview" && (
                             <div className="space-y-6">
@@ -733,22 +786,22 @@ export default function Home() {
                           {activeDashboardTab === "financials" && (
                             <div className="space-y-6">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                
+
                                 {/* Controls Box */}
                                 <div className="p-5 bg-slate-950/80 rounded-xl border border-white/5 space-y-4">
                                   <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                                     <TrendingUp className="w-4 h-4" />
                                     Interactive Price Controls
                                   </h3>
-                                  
+
                                   {/* Slider 1: Unit Cost */}
                                   <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-semibold">
                                       <span className="text-slate-400">Unit Manufacturing Cost</span>
                                       <span className="text-white">${calcUnitCost.toFixed(2)}</span>
                                     </div>
-                                    <input 
-                                      type="range" 
+                                    <input
+                                      type="range"
                                       min={Math.max(0.1, result.dashboard.financialModel.unitCost * 0.4)}
                                       max={result.dashboard.financialModel.unitCost * 2}
                                       step="0.05"
@@ -764,8 +817,8 @@ export default function Home() {
                                       <span className="text-slate-400">Customer Retail Price</span>
                                       <span className="text-cyan-300 font-bold">${calcRetailPrice.toFixed(2)}</span>
                                     </div>
-                                    <input 
-                                      type="range" 
+                                    <input
+                                      type="range"
                                       min={calcUnitCost + 0.1}
                                       max={result.dashboard.financialModel.recommendedPrice * 2.5}
                                       step="0.10"
@@ -781,8 +834,8 @@ export default function Home() {
                                       <span className="text-slate-400">Estimated Sales Volume</span>
                                       <span className="text-white">{calcSalesVolume} units/mo</span>
                                     </div>
-                                    <input 
-                                      type="range" 
+                                    <input
+                                      type="range"
                                       min="5"
                                       max={result.dashboard.financialModel.estimatedSalesPerMonth * 3}
                                       step="5"
@@ -799,18 +852,18 @@ export default function Home() {
 
                                 {/* Results Box */}
                                 <div className="p-5 bg-slate-950/40 rounded-xl border border-white/5 flex flex-col justify-between gap-6">
-                                  
+
                                   {/* Big Stats Row */}
                                   <div className="grid grid-cols-2 gap-4">
-                                    
+
                                     <div className="p-3 bg-slate-900 rounded-lg border border-white/5 text-center">
                                       <p className="text-[10px] text-slate-400 uppercase font-semibold">Projected Revenue</p>
-                                      <p className="text-lg font-black text-white">${computedMonthlyRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                                      <p className="text-lg font-black text-white">${computedMonthlyRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                     </div>
 
                                     <div className="p-3 bg-slate-900 rounded-lg border border-cyan-500/20 text-center">
                                       <p className="text-[10px] text-cyan-400 uppercase font-semibold">Projected Profit</p>
-                                      <p className="text-lg font-black text-cyan-300">${computedMonthlyProfit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                                      <p className="text-lg font-black text-cyan-300">${computedMonthlyProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                     </div>
 
                                   </div>
@@ -823,16 +876,15 @@ export default function Home() {
                                         {computedMarginPercent.toFixed(1)}%
                                       </span>
                                     </div>
-                                    
+
                                     <div className="w-full h-4 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-white/5 flex">
                                       <div
-                                        className={`h-full rounded-full transition-all duration-300 bg-gradient-to-r ${
-                                          computedMarginPercent > 50 
-                                            ? "from-violet-500 to-emerald-400" 
-                                            : computedMarginPercent > 20 
-                                              ? "from-violet-500 to-yellow-400" 
+                                        className={`h-full rounded-full transition-all duration-300 bg-gradient-to-r ${computedMarginPercent > 50
+                                            ? "from-violet-500 to-emerald-400"
+                                            : computedMarginPercent > 20
+                                              ? "from-violet-500 to-yellow-400"
                                               : "from-rose-500 to-rose-400"
-                                        }`}
+                                          }`}
                                         style={{ width: `${Math.min(100, Math.max(0, computedMarginPercent))}%` }}
                                       />
                                     </div>
@@ -861,11 +913,11 @@ export default function Home() {
                               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                                 Recommended Launch Campaigns
                               </h3>
-                              
+
                               <div className="space-y-3">
                                 {result.dashboard.marketingStrategy.map((strategy, idx) => (
-                                  <div 
-                                    key={idx} 
+                                  <div
+                                    key={idx}
                                     className="p-4 bg-slate-950/60 rounded-xl border border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-slate-950 transition-colors"
                                   >
                                     <div className="flex gap-4">
@@ -879,7 +931,7 @@ export default function Home() {
                                         </p>
                                       </div>
                                     </div>
-                                    
+
                                     <div className="flex-shrink-0">
                                       <span className="px-3 py-1 text-[10px] font-bold bg-slate-900 text-cyan-300 border border-cyan-500/20 rounded-full">
                                         EST. BUDGET: {strategy.estimatedCost}
@@ -894,7 +946,7 @@ export default function Home() {
                           {/* TAB 4: BRAND DECK */}
                           {activeDashboardTab === "brand" && (
                             <div className="space-y-6">
-                              
+
                               {/* Swatches Deck */}
                               <div>
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
@@ -905,7 +957,7 @@ export default function Home() {
                                     const copyId = `color-${idx}`;
                                     const isCopied = copySuccess[copyId];
                                     return (
-                                      <div 
+                                      <div
                                         key={idx}
                                         onClick={() => copyToClipboard(color.hex, copyId)}
                                         className="p-3 bg-slate-950/60 rounded-xl border border-white/5 flex items-center justify-between cursor-pointer hover:bg-slate-950 transition-all group"
@@ -917,7 +969,7 @@ export default function Home() {
                                             <p className="text-[10px] font-mono text-slate-500">{color.hex}</p>
                                           </div>
                                         </div>
-                                        
+
                                         <button className="p-1 text-slate-500 hover:text-white transition-colors">
                                           {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                                         </button>
@@ -928,7 +980,7 @@ export default function Home() {
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                
+
                                 {/* Logo Concept */}
                                 <div className="p-4 bg-slate-950/60 rounded-xl border border-white/5 space-y-2">
                                   <h4 className="text-xs font-bold text-rose-400 flex items-center gap-1.5 uppercase">
@@ -962,16 +1014,16 @@ export default function Home() {
                           {/* TAB 5: LAUNCH CHECKLIST KANBAN */}
                           {activeDashboardTab === "checklist" && (
                             <div className="space-y-4">
-                              
+
                               <div className="flex justify-between items-center">
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                                   Launch checklist
                                 </h3>
-                                
+
                                 <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded-full">
                                   {Math.round(
-                                    (Object.values(completedTasks).filter(Boolean).length / 
-                                    (result.dashboard.checklist.length || 1)) * 100
+                                    (Object.values(completedTasks).filter(Boolean).length /
+                                      (result.dashboard.checklist.length || 1)) * 100
                                   )}% COMPLETED
                                 </span>
                               </div>
@@ -979,7 +1031,7 @@ export default function Home() {
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {result.dashboard.checklist.map((item) => {
                                   const isChecked = completedTasks[item.id] || false;
-                                  
+
                                   // Map category labels to styled colors
                                   const categoryColors: Record<string, string> = {
                                     Marketing: "bg-violet-500/10 text-violet-300 border-violet-500/20",
@@ -989,27 +1041,24 @@ export default function Home() {
                                   };
 
                                   return (
-                                    <div 
-                                      key={item.id} 
+                                    <div
+                                      key={item.id}
                                       onClick={() => toggleTask(item.id)}
-                                      className={`p-3.5 bg-slate-950/60 rounded-xl border cursor-pointer flex items-center justify-between gap-4 transition-all ${
-                                        isChecked ? "border-emerald-500/40 bg-slate-950/20 opacity-60" : "border-white/5 hover:bg-slate-950"
-                                      }`}
+                                      className={`p-3.5 bg-slate-950/60 rounded-xl border cursor-pointer flex items-center justify-between gap-4 transition-all ${isChecked ? "border-emerald-500/40 bg-slate-950/20 opacity-60" : "border-white/5 hover:bg-slate-950"
+                                        }`}
                                     >
                                       <div className="flex items-center gap-3">
-                                        <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
-                                          isChecked ? "bg-emerald-500 border-emerald-400 text-slate-950" : "border-slate-700 bg-slate-900"
-                                        }`}>
+                                        <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${isChecked ? "bg-emerald-500 border-emerald-400 text-slate-950" : "border-slate-700 bg-slate-900"
+                                          }`}>
                                           {isChecked && <Check className="w-3.5 h-3.5 stroke-[4]" />}
                                         </div>
                                         <span className={`text-xs ${isChecked ? "line-through text-slate-500" : "text-white"}`}>
                                           {item.task}
                                         </span>
                                       </div>
-                                      
-                                      <span className={`text-[9px] font-bold border px-2 py-0.5 rounded uppercase flex-shrink-0 ${
-                                        categoryColors[item.category] || categoryColors.Operations
-                                      }`}>
+
+                                      <span className={`text-[9px] font-bold border px-2 py-0.5 rounded uppercase flex-shrink-0 ${categoryColors[item.category] || categoryColors.Operations
+                                        }`}>
                                         {item.category}
                                       </span>
                                     </div>
@@ -1026,10 +1075,10 @@ export default function Home() {
                     {/* CASE D2: BAD PROMPT -> CRT TERMINAL SCREEN WITH LAZY TEXT */}
                     {result.grade === "Needs Improvement" && (
                       <div className="flex flex-col gap-6">
-                        
+
                         {/* CRT Terminal Screen Container */}
                         <div className="crt-screen rounded-2xl p-6 min-h-[300px] flex flex-col justify-between">
-                          
+
                           {/* Monitor Frame Top Bar */}
                           <div className="flex items-center justify-between border-b border-sky-400/20 pb-3 mb-4 text-[10px] text-sky-400/80 font-mono tracking-widest uppercase">
                             <span className="flex items-center gap-1.5 animate-pulse">
@@ -1074,7 +1123,7 @@ export default function Home() {
                                   <p className="text-[10px] text-slate-500">How to unlock premium quality</p>
                                 </div>
                               </div>
-                              <button 
+                              <button
                                 onClick={() => setShowPromptCoach(false)}
                                 className="p-1 text-slate-500 hover:text-white rounded"
                               >
@@ -1098,7 +1147,7 @@ export default function Home() {
                               <span className="text-[10px] text-slate-500 leading-relaxed font-medium">
                                 Tip: Click "Use Blueprint Template" on the console to load a strong structure, then swap in your brand name!
                               </span>
-                              
+
                               <button
                                 onClick={insertTemplate}
                                 className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white rounded-lg text-xs font-bold shadow hover:brightness-110 active:scale-[0.98] transition-all"
@@ -1125,8 +1174,7 @@ export default function Home() {
 
       {/* Sleek footer */}
       <footer className="w-full text-center py-6 mt-12 border-t border-white/5 bg-slate-950/80 text-xs text-slate-600">
-        <p>&copy; 2026 LakshyaGPT Prompting Academy. Built with Vercel AI SDK &amp; Gemini 2.5 Flash.</p>
-        <p className="mt-1 font-semibold text-slate-500">Pair Programmed with Antigravity AI.</p>
+        <p className="mt-1 font-semibold text-slate-500">Made with ❤️ by Team Lakshya</p>
       </footer>
     </div>
   );

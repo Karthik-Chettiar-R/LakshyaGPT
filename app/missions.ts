@@ -2,87 +2,139 @@ import { BusinessMission } from './types';
 
 export const MISSIONS: BusinessMission[] = [
   {
-    id: 'lemonade',
-    title: 'Lemonade Stand Empire',
-    subtitle: 'Turn sour lemons into sweet profits.',
-    description: 'You want to set up a lemonade stand in your local park. You need a business strategy that covers pricing, basic marketing, and operation costs. But remember: don\'t let the AI make all your decisions! Brainstorm the price and target audience yourself, and prompt the AI to do the manual structuring.',
-    icon: 'Citrus',
+    id: 'traffic',
+    title: 'Mumbai Traffic',
+    subtitle: 'Untangle the gridlock on Mumbai\'s busy streets.',
+    description: 'Over 12 million people commute daily. Propose a business that uses AI to optimize routes, manage carpooling, or improve traffic flow in Mumbai.',
+    icon: 'Car',
     tips: [
-      "Specify a Role: e.g. 'Act as a small business finance advisor.'",
-      "State the Topic: e.g. 'Create a launching report for a lemonade stand.'",
-      "Enforce Format: e.g. 'Structure the costing plan as a detailed table.'",
-      "Provide Constraints: e.g. 'Use a budget of $30 and set the glass price at $1.50.'"
+      "AI Role: E.g., 'Act as an expert traffic operations consultant'",
+      "Business Name: E.g., 'TransitFlow'",
+      "Rough Solution: E.g., 'A network of on-demand carpool shuttle buses'",
+      "Target Audience: E.g., 'Daily office commuters in Mumbai'",
+      "How AI is used: E.g., 'AI dynamically routes the shuttles and matches passengers'"
     ],
-    placeholder: "Act as a small business finance advisor. Create a detailed launch plan for 'SqueezeFresh Lemonade' targeting weekend park visitors. Include a cost breakdown table with a $30 budget and a glass price of $1.50, and format the output with distinct headers and a 5-step checklist.",
-    suggestedTemplate: "Act as a small business finance advisor. Create a launching report for my lemonade stand named '[Brand Name]' targeting [Target Audience]. Organize the cost details in a table, assuming a starting budget of [Budget] and selling each glass for [Glass Price]. Format it with bullet points and a launch checklist.",
-    evalKeywords: {
-      role: ['advisor', 'consultant', 'expert', 'marketer', 'analyst', 'planner', 'coach', 'assistant', 'strategist', 'accountant', 'specialist', 'mentor'],
-      topic: ['lemonade', 'lemon', 'drink', 'beverage', 'juice', 'citrus', 'stand', 'booth', 'park', 'cup', 'glass'],
-      format: ['table', 'bullet', 'list', 'checklist', 'heading', 'header', 'section', 'structure', 'format', 'chart', 'graph', 'schedules'],
-      constraints: ['budget', '$', 'price', 'cost', 'dollar', 'target', 'audience', 'visitor', 'park', 'kid', 'family', 'teen', 'percent', 'margin', 'pricing', 'cents']
-    }
+    placeholder: "AI Role: Act as an expert traffic operations consultant. Business Name: TransitFlow. Rough Solution: A network of on-demand carpool shuttle buses. Target Audience: Daily office commuters in Mumbai. Tagline: Commute Smart, Live Better. How AI is used: AI dynamically routes the shuttles and matches passengers based on real-time traffic.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
   },
   {
-    id: 'sneakers',
-    title: 'Custom Sneaker Brand',
-    subtitle: 'Kickstart a hype streetwear brand.',
-    description: 'You are launching a custom sneaker brand online. You need a hype marketing plan, pricing strategy, and brand color theme. Tell the AI exactly who your target audience is, what aesthetic you want, and how to structure your brand deck!',
-    icon: 'Footprints',
+    id: 'corruption',
+    title: 'Corruption',
+    subtitle: 'Promote transparency and accountability.',
+    description: 'Corruption drains public resources and trust. Build a business solution using AI to audit records, verify transactions, or report misconduct anonymously.',
+    icon: 'ShieldAlert',
     tips: [
-      "Establish AI Persona: e.g. 'Act as a streetwear brand director.'",
-      "Clarify Core Focus: e.g. 'Write a hype marketing campaign for sneakers.'",
-      "Demand Structure: e.g. 'Format with tables for launch steps and lists for colors.'",
-      "Add Hard Details: e.g. 'Our brand is RetroKicks, color palette is neon green and dark violet, target is teen gamers.'"
+      "AI Role: E.g., 'Act as an anti-corruption forensic auditing specialist'",
+      "Business Name: E.g., 'VeriTrust'",
+      "Rough Solution: E.g., 'An automated invoice verification platform'",
+      "Target Audience: E.g., 'Municipal government departments'",
+      "How AI is used: E.g., 'AI flags double-billing and vendor inflation patterns'"
     ],
-    placeholder: "Act as a streetwear brand director. Write a hype marketing plan and brand identity guide for 'RetroKicks', a custom sneaker brand targeting teen gamers. Include a launch step-by-step checklist, a brand color scheme of cyberpunk neon green and dark violet, and manufacturing budget guidelines.",
-    suggestedTemplate: "Act as a streetwear brand director. Create a hype launch report for '[Brand Name]' targeting [Target Audience]. Include a marketing calendar, a brand color scheme of [Color 1] and [Color 2], and structural tables detailing sneaker manufacturing costs and pricing strategies.",
-    evalKeywords: {
-      role: ['director', 'designer', 'consultant', 'marketer', 'streetwear', 'fashion', 'advisor', 'expert', 'specialist', 'producer', 'creative'],
-      topic: ['sneaker', 'shoe', 'brand', 'footwear', 'kick', 'streetwear', 'hype', 'drop', 'apparel', 'kicks', 'laces', 'sole'],
-      format: ['table', 'list', 'bullet', 'checklist', 'heading', 'section', 'calendar', 'timeline', 'guide', 'deck', 'structure', 'tabs'],
-      constraints: ['target', 'audience', 'teen', 'gamer', 'kid', 'athlete', 'color', 'palette', 'aesthetic', 'neon', 'budget', '$', 'margin', 'price', 'dollar', 'manufacturing', 'cost']
-    }
+    placeholder: "AI Role: Act as an anti-corruption forensic auditing specialist. Business Name: VeriTrust. Rough Solution: An automated invoice verification platform. Target Audience: Municipal government departments. Tagline: Clean Ledger, Trustworthy Governance. How AI is used: AI flags double-billing and vendor inflation patterns by cross-referencing spending receipts.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
   },
   {
-    id: 'bakery',
-    title: 'Cupcake Sale & Bakery',
-    subtitle: 'Bake plans for sweet success.',
-    description: 'You are hosting a school bakery stall or cupcake sale. You need a production schedule, menu layout, and simple marketing pitch. Work out the starting ingredients budget, cupcake flavors, and what files/formats you need the AI to organize.',
-    icon: 'Cake',
+    id: 'bullying',
+    title: 'School Bullying',
+    subtitle: 'Create safe spaces for every student.',
+    description: 'Bullying harms mental health and school culture. Propose an AI-powered reporting app, empathy coaching chatbot, or sentiment analysis tool to detect harassment.',
+    icon: 'UserX',
     tips: [
-      "Choose AI Role: e.g. 'Act as a professional pastry chef and business planner.'",
-      "Set the Mission: e.g. 'Create a bakery menu and operation schedule.'",
-      "Specify Layout: e.g. 'Use bullet lists for the menu and tables for raw costs.'",
-      "Provide constraints: e.g. 'We have a $40 ingredient budget and need to bake 60 cupcakes.'"
+      "AI Role: E.g., 'Act as an empathetic counselor and school safety advocate'",
+      "Business Name: E.g., 'SafeSpace'",
+      "Rough Solution: E.g., 'An anonymous peer reporting chatbot'",
+      "Target Audience: E.g., 'High school guidance counselors and students'",
+      "How AI is used: E.g., 'AI analyzes threat level and connects students to counselors'"
     ],
-    placeholder: "Act as a professional pastry chef and business planner. Create a bakery menu and production schedule for a school bake sale named 'SweetTreats'. The ingredient budget is $40 to bake 60 cupcakes. Format the menu with bullet points showing prices, and the kitchen prep schedule in a step-by-step table.",
-    suggestedTemplate: "Act as a professional chef. Create a bake sale report and menu for '[Bakery Name]' targeting [Target Audience]. Organize ingredient costs in a table with a total budget of [Budget] for [Quantity] cupcakes. Use bullet points for the menu and list promotional slogans.",
-    evalKeywords: {
-      role: ['chef', 'pastry', 'baker', 'manager', 'planner', 'advisor', 'consultant', 'expert', 'specialist', 'caterer'],
-      topic: ['cupcake', 'cake', 'bakery', 'bake', 'cookie', 'sweet', 'treat', 'pastry', 'stall', 'sale', 'baking', 'frosting', 'oven'],
-      format: ['menu', 'table', 'bullet', 'list', 'schedule', 'timeline', 'checklist', 'heading', 'format', 'structure', 'pitch'],
-      constraints: ['budget', '$', 'cupcake', 'quantity', 'price', 'ingredient', 'cost', 'school', 'charity', 'flavor', 'slogan', 'prep', 'dollar', 'baking', 'pieces', 'batch']
-    }
+    placeholder: "AI Role: Act as an empathetic counselor and school safety advocate. Business Name: SafeSpace. Rough Solution: An anonymous peer reporting chatbot. Target Audience: High school guidance counselors and students. Tagline: You Are Not Alone. How AI is used: AI analyzes conversational sentiment to de-escalate stress and alert human counselors in severe cases.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
   },
   {
-    id: 'startup',
-    title: 'Mobile App Startup',
-    subtitle: 'Code your way to the top.',
-    description: 'You have an idea for a cool mobile app (like a homework helper or local trade app). You want to pitch it to investors! Ask the AI to write a high-impact startup pitch, define the core user problem, and plan the development phases. Do not let the AI guess the app\'s name or who it\'s for—tell it exactly!',
+    id: 'hospitals',
+    title: 'Lack of Hospitals in Rural Areas',
+    subtitle: 'Bridge the healthcare gap in remote villages.',
+    description: 'Rural communities lack quick access to emergency care. Design a business providing AI diagnostic assistants, smart telemedicine kiosks, or drone delivery for medical supplies.',
+    icon: 'HeartPulse',
+    tips: [
+      "AI Role: E.g., 'Act as a rural healthcare access and public health advisor'",
+      "Business Name: E.g., 'GramDoc'",
+      "Rough Solution: E.g., 'Deploy diagnostic telemedicine kiosks with medical sensors'",
+      "Target Audience: E.g., 'Rural village residents'",
+      "How AI is used: E.g., 'AI interprets local sensor data and flags triage priority'"
+    ],
+    placeholder: "AI Role: Act as a rural healthcare access and public health advisor. Business Name: GramDoc. Rough Solution: Deploy diagnostic telemedicine kiosks with medical sensors. Target Audience: Rural village residents. Tagline: Quality Care, No Matter the Distance. How AI is used: AI interprets local sensor data and flags triage priority to help remote doctors treat patients.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
+  },
+  {
+    id: 'garbage',
+    title: 'Garbage Management in Cities',
+    subtitle: 'Clean up urban waste streams.',
+    description: 'Cities generate thousands of tons of garbage daily. Invent a business using AI to automate waste sorting, optimize municipal dump trucks, or reward public recycling.',
+    icon: 'Trash2',
+    tips: [
+      "AI Role: E.g., 'Act as a smart city logistics and waste management advisor'",
+      "Business Name: E.g., 'EcoCycle AI'",
+      "Rough Solution: E.g., 'Color-coded smart bins that reward residents for sorting'",
+      "Target Audience: E.g., 'Large urban apartment complexes'",
+      "How AI is used: E.g., 'AI camera detects sorted items and awards recycling points'"
+    ],
+    placeholder: "AI Role: Act as a smart city logistics and waste management advisor. Business Name: EcoCycle AI. Rough Solution: Color-coded smart bins that reward residents for sorting. Target Audience: Large urban apartment complexes. Tagline: Scan, Sort, Reward. How AI is used: AI cameras detect sorted items and award recycling points directly in the resident mobile app.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
+  },
+  {
+    id: 'farmers',
+    title: 'Farmers Getting Underpaid',
+    subtitle: 'Empower agriculture with fair prices.',
+    description: 'Middlemen exploit farmers, buying cheap and selling high. Pitch an AI platform that predicts market demand, matches farmers directly to bulk buyers, or optimizes supply chains.',
+    icon: 'Sprout',
+    tips: [
+      "AI Role: E.g., 'Act as a fair-trade agritech supply chain analyst'",
+      "Business Name: E.g., 'KisanDirect'",
+      "Rough Solution: E.g., 'A digital crop marketplace connecting growers directly to retailers'",
+      "Target Audience: E.g., 'Grassroots vegetable farmers'",
+      "How AI is used: E.g., 'AI predicts urban market demand and advises fair crop pricing'"
+    ],
+    placeholder: "AI Role: Act as a fair-trade agritech supply chain analyst. Business Name: KisanDirect. Rough Solution: A digital crop marketplace connecting growers directly to retailers. Target Audience: Grassroots vegetable farmers. Tagline: Growth to the Grower. How AI is used: AI predicts urban market demand and advises fair crop pricing thresholds to protect farmers.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
+  },
+  {
+    id: 'sports',
+    title: 'Sports Development',
+    subtitle: 'Nurture athletic talent from grassroots.',
+    description: 'Young talent lacks access to professional coaching and scouts. Propose a business that uses computer vision AI to analyze player moves or scout rising stars.',
+    icon: 'Trophy',
+    tips: [
+      "AI Role: E.g., 'Act as a professional athletic performance coach and talent scout'",
+      "Business Name: E.g., 'TalentLens'",
+      "Rough Solution: E.g., 'A mobile app that processes training video submissions'",
+      "Target Audience: E.g., 'Grassroots football athletes'",
+      "How AI is used: E.g., 'AI computer vision tracks skeletal motion to provide feedback'"
+    ],
+    placeholder: "AI Role: Act as a professional athletic performance coach and talent scout. Business Name: TalentLens. Rough Solution: A mobile app that processes training video submissions. Target Audience: Grassroots football athletes. Tagline: Scouted from Anywhere. How AI is used: AI computer vision tracks skeletal motion to provide immediate physical posturing feedback.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
+  },
+  {
+    id: 'screentime',
+    title: 'Excessive Screen Time',
+    subtitle: 'Balance digital life and physical wellbeing.',
+    description: 'Screen addiction affects focus, sleep, and relationships. Create an AI tool that tracks screen engagement, suggests active real-world alternative tasks, or coaches mindful habits.',
     icon: 'Smartphone',
     tips: [
-      "Define the Persona: e.g. 'Act as a tech startup pitch advisor.'",
-      "Name the Venture: e.g. 'Write an investor pitch for StudyBuddy app.'",
-      "Structure requirements: e.g. 'Provide a 3-stage roadmap table and a bullet list of key features.'",
-      "Supply Metrics & Targets: e.g. 'Target middle school students, aim for 1,000 launch users, and a development timeline of 3 months.'"
+      "AI Role: E.g., 'Act as a child development and digital wellness counselor'",
+      "Business Name: E.g., 'Unplugged AI'",
+      "Rough Solution: E.g., 'A gamified tracker that maps screen limits to physical play'",
+      "Target Audience: E.g., 'Distracted students and worried parents'",
+      "How AI is used: E.g., 'AI detects screen fatigue and triggers audio alerts for hobbies'"
     ],
-    placeholder: "Act as a tech startup pitch advisor. Write an investor pitch and features roadmap for 'StudyBuddy', a homework helper mobile app targeting middle school students. Structure the development phases as a 3-stage roadmap table, and list key features in bullet points. Target acquiring 1,000 launch users in 3 months.",
-    suggestedTemplate: "Act as a tech startup advisor. Write an investor pitch and product features list for my mobile app named '[App Name]' targeting [Target Audience]. Organize the launch roadmap in a table across [Timeline] months, and list user acquisition ideas in structured bullet points.",
-    evalKeywords: {
-      role: ['advisor', 'investor', 'founder', 'analyst', 'consultant', 'director', 'expert', 'specialist', 'architect', 'strategist'],
-      topic: ['app', 'mobile', 'software', 'tech', 'startup', 'application', 'platform', 'user', 'feature', 'ios', 'android', 'phone'],
-      format: ['pitch', 'roadmap', 'table', 'timeline', 'list', 'bullet', 'phase', 'stage', 'framework', 'deck', 'structure', 'format'],
-      constraints: ['target', 'audience', 'user', 'student', 'kid', 'teen', 'month', 'timeline', 'feature', 'problem', 'solve', 'acquisition', 'download', 'metrics', 'budget', '$', 'downloads']
-    }
+    placeholder: "AI Role: Act as a child development and digital wellness counselor. Business Name: Unplugged AI. Rough Solution: A gamified tracker that maps screen limits to physical play. Target Audience: Distracted students and worried parents. Tagline: Connect to the Real World. How AI is used: AI detects screen fatigue and triggers smart audio alerts recommending physical hobbies.",
+    suggestedTemplate: "AI Role: [Role]. Business Name: [Name]. Rough Solution: [Solution]. Target Audience: [Audience]. Tagline: [Tagline]. How AI is used: [AI Usage].",
+    evalKeywords: { role: [], topic: [], format: [], constraints: [] }
   }
 ];

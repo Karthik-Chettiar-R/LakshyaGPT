@@ -17,16 +17,34 @@ export interface BusinessMission {
 
 export interface PromptScore {
   total: number;
-  hasRole: boolean;
-  hasTopic: boolean;
-  hasFormat: boolean;
-  hasConstraints: boolean;
+  hasBusinessName: boolean;
+  hasTargetAudience: boolean;
+  hasAiRole: boolean;
+  hasSolution: boolean;
+  hasAiUsage: boolean;
+  hasTagline: boolean;
+}
+
+export interface BusinessReport {
+  executiveSummary: string;
+  problemStatement: string;
+  businessOverview: string;
+  targetAudienceAnalysis: string;
+  improvedAiEnhancedSolution: string;
+  aiImplementationStrategy: string;
+  revenueModel: string;
+  socialImpact: string;
+  marketingStrategy: string;
+  futureGrowthOpportunities: string;
+  recommendations: string;
+  conclusion: string;
 }
 
 export interface DashboardData {
   brandName: string;
   tagline: string;
   executiveSummary: string;
+  report?: BusinessReport;
   targetAudience: {
     segment: string;
     description: string;
@@ -62,3 +80,4 @@ export interface PromptResult {
   dashboard?: DashboardData;
   coachTips: string[];
 }
+
